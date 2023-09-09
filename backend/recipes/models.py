@@ -9,7 +9,6 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    """Модель тегов."""
 
     name = models.CharField(max_length=LIMITATION, unique=True)
     color = models.CharField(max_length=LIMITATION, unique=True)
@@ -25,7 +24,6 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    """Модель ингридиентов."""
 
     name = models.CharField(max_length=200)
     measurement_unit = models.CharField(
@@ -48,7 +46,6 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    """Модель рецептов."""
 
     author = models.ForeignKey(
         User,
@@ -148,7 +145,6 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    """Модель списка покупок."""
 
     recipe = models.ForeignKey(
         Recipe,
