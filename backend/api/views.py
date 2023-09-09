@@ -4,7 +4,6 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-# from django.db.models.expressions import Exists, OuterRef
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
@@ -28,11 +27,7 @@ User = get_user_model()
 
 
 class TagViewSet(ReadOnlyModelViewSet):
-    """
-    ViewSet модели Tag.
-    Отображение тегов.
-    """
-
+  
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
@@ -40,10 +35,6 @@ class TagViewSet(ReadOnlyModelViewSet):
 
 
 class IngredientViewSet(ReadOnlyModelViewSet):
-    """
-    ViewSet модели Ingredient.
-    Отображение ингредиентов.
-    """
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
@@ -53,10 +44,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 
 
 class UserViewSet(UserViewSet):
-    """
-    ViewSet модели User.
-    Поддерживает полный набор действий.
-    """
+
     queryset = User.objects.all().order_by("id")
     permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
@@ -74,10 +62,7 @@ class UserViewSet(UserViewSet):
 
     @action(("get",), detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
-        """
-        Запрос к эндпоинту /me/.
-        Получения информации о текущем пользователе.
-        """
+    
         user = request.user
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data)
@@ -88,10 +73,7 @@ class UserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def set_password(self, request):
-        """
-        Запрос к эндпоинту /set_password/.
-        Изменения пfроля.
-        """
+       
         user = self.request.user
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -106,10 +88,7 @@ class UserViewSet(UserViewSet):
         url_path=r"subscribe"
     )
     def subscribe(self, request, id=None):
-        """
-        Запрос к эндпоинту /subscribe/.
-        Создание и удаление подписки на пользователя.
-        """
+      
         current_user = request.user
         following_user = get_object_or_404(User, id=id)
         follow = Follow.objects.filter(
@@ -155,11 +134,7 @@ class UserViewSet(UserViewSet):
         url_path=r"subscriptions"
     )
     def subscriptions(self, request):
-        """
-        Запрос к эндпоинту /subscriptions/.
-        Получения списка пользователей,
-        на которых подписан пользователь.
-        """
+    
         user = request.user
         queryset = User.objects.filter(followers__follower=user.id)
         pages = self.paginate_queryset(queryset)
@@ -170,14 +145,10 @@ class UserViewSet(UserViewSet):
 
 
 class RecipeViewSet(ModelViewSet):
-    """
-    ViewSet модели Recipe.
-    Поддерживает полный набор действий.
-    """
+  
     queryset = Recipe.objects.all().order_by("-pub_date")
     permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    # filterset_class = RecipeFilter
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
@@ -188,14 +159,6 @@ class RecipeViewSet(ModelViewSet):
         is_in_shopping_cart = self.request.query_params.get(
             'is_in_shopping_cart'
         )
-        # queryset = Recipe.objects.annotate(
-        #     is_favorited=Exists(
-        #         Favorite.objects.filter(
-        #             user=user.id, recipe=OuterRef('pk'))),
-        #     is_in_shopping_cart=Exists(
-        #         ShoppingCart.objects.filter(
-        #             user=user, recipe=OuterRef('pk')))
-        # ).select_related('author').prefetch_related('tags', 'ingredients')
 
         if author:
             queryset = queryset.filter(author_id=author)
@@ -223,10 +186,7 @@ class RecipeViewSet(ModelViewSet):
         url_path=r"shopping_cart"
     )
     def shopping_cart(self, request, pk=None):
-        """
-        Запрос к эндпоинту /shopping_cart/.
-        Добавление рецепта в корзину и удаление.
-        """
+      
         recipes = get_object_or_404(Recipe, pk=pk)
         cart = ShoppingCart.objects.filter(
             recipe=recipes, user=request.user
@@ -262,10 +222,7 @@ class RecipeViewSet(ModelViewSet):
         url_path=r"favorite"
     )
     def favorite(self, request, pk=None):
-        """
-        Запрос к эндпоинту /favorite/.
-        Добавление рецепта в избранное и удаление.
-        """
+      
         recipe = get_object_or_404(Recipe, pk=pk)
         favorite = Favorite.objects.filter(
             recipe=recipe, user=request.user
