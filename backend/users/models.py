@@ -7,7 +7,6 @@ from backend.settings import LIMITATION
 
 
 class User(AbstractUser):
-    """Модель пользователей."""
 
     email = models.EmailField(
         'Email',
@@ -33,7 +32,6 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
-    """Модель подписок пользователя."""
 
     follower = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="follows"
