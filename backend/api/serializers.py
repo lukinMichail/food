@@ -18,10 +18,7 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели User.
-    Вывод информации о пользователях.
-    """
+
     is_subscribed = serializers.SerializerMethodField(
         method_name="get_is_subscribed"
     )
@@ -48,10 +45,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserCreateSerializer(UserCreateSerializer):
-    """
-    Сериализатор модели User.
-    Предназначен для регистрации пользователей.
-    """
 
     class Meta:
         model = User
@@ -62,10 +55,6 @@ class UserCreateSerializer(UserCreateSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели Tag.
-    Вывод информации о тегах.
-    """
 
     class Meta:
         model = Tag
@@ -73,10 +62,6 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели Ingredient.
-    Вывод информации об ингридиентов.
-    """
 
     class Meta:
         model = Ingredient
@@ -85,10 +70,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.Serializer):
-    """
-    Сериализатор модели RecipeIngridient.
-    Запись о количестве ингредиента.
-    """
+
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -102,10 +84,7 @@ class RecipeIngredientSerializer(serializers.Serializer):
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели Recipe.
-    Вывод неполной информации о рецептах.
-    """
+
 
     class Meta:
         model = Recipe
@@ -118,9 +97,7 @@ class RecipeShortSerializer(serializers.ModelSerializer):
 
 
 class IngredientAddRecipeSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для добавления ингредиентов в рецепт.
-    """
+
     id = serializers.IntegerField()
     amount = serializers.IntegerField()
 
@@ -130,10 +107,6 @@ class IngredientAddRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели Recipe.
-    Вывод информации о рецептах.
-    """
 
     tags = TagSerializer(many=True)
     author = UserSerializer(read_only=True)
@@ -166,18 +139,14 @@ class RecipeListSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
-        """
-        Проверка - находится ли рецепт в избранном.
-        """
+        
         request = self.context.get('request')
         if not request or request.user.is_anonymous:
             return False
         return obj.favorite.filter(user=request.user).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        """
-        Проверка - находится ли рецепт в списке  покупок.
-        """
+        
         request = self.context.get('request')
         if not request or request.user.is_anonymous:
             return False
@@ -185,10 +154,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateSerializers(serializers.ModelSerializer):
-    """
-    Сериализатор модели Recipe.
-    Создание и изменения рецепта.
-    """
+    
     ingredients = IngredientAddRecipeSerializer(many=True)
     author = UserSerializer(read_only=True)
     image = Base64ImageField()
@@ -278,10 +244,7 @@ class RecipeCreateUpdateSerializers(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели Favorite.
-    Добавление рецепта в избранное.
-    """
+
     id = PrimaryKeyRelatedField(source="recipe", read_only=True)
     name = ReadOnlyField(source="recipe.name")
     image = ImageField(source="recipe.image", read_only=True)
@@ -307,10 +270,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели ShoppingCart.
-    Вывод информации об списке покупак.
-    """
+
 
     id = PrimaryKeyRelatedField(source="recipe", read_only=True)
     name = ReadOnlyField(source="recipe.name")
@@ -349,22 +309,6 @@ class SubscribeRecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionsSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели User.
-    Вывод списка подписок пользователя.
-    """
-    # id = ReadOnlyField(
-    #     source=' following.id'
-    # )
-    # username = ReadOnlyField(
-    #     source=' following.username'
-    # )
-    # first_name = ReadOnlyField(
-    #     source=' following.first_name'
-    # )
-    # last_name = ReadOnlyField(
-    #     source=' following.last_name'
-    # )
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
@@ -405,7 +349,6 @@ class SubscriptionsSerializer(serializers.ModelSerializer):
 
 
 class SubscribeListSerializer(serializers.ModelSerializer):
-    """ Сериализатор подписок. """
 
     class Meta:
         model = Follow
@@ -424,9 +367,6 @@ class SubscribeListSerializer(serializers.ModelSerializer):
 
 
 class PasswordSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор, предназначенный для проверки пароля.
-    """
 
     new_password = serializers.CharField(
         max_length=LIMITATION, write_only=True, required=True
