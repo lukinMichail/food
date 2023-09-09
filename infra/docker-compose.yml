@@ -5,12 +5,12 @@ services:
   db:
     image: postgres:13.0-alpine
     volumes:
-      - database:/var/lib/postgresql/data/
+      - pg_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
 
   backend:
-    image: ragecode/foodgram_backend:latest
+    image: 1ukin/foodgrams_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -21,7 +21,7 @@ services:
       - ./.env
 
   frontend:
-    image: ragecode/foodgram_frontend:latest
+    image: 1ukin/foodgrams_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
@@ -45,6 +45,6 @@ services:
       - ./.env
 
 volumes:
-  database:
+  pg_data:
   static_value:
   media_value:
